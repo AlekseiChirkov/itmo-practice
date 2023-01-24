@@ -1,0 +1,175 @@
+{{template "base" .}}
+{{define "title"}}ITMO PRACTICE{{end}}
+
+{{define "body"}}
+  <div id="glossary">
+      {{ range $term, $definition := .Glossary }}
+        <div class="term fade-in">
+          <div class="title">{{ $term }}</div><div>{{ $definition }}</div>
+        </div>
+      {{ end }}
+  </div>
+  <div id="mind-map" class="fade-in"></div>
+{{end}}
+
+{{define "script"}}
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/networkgraph.js"></script>
+  <script>
+    const mindMap = {{ .MindMap }};
+  </script>
+  <script>
+    const options = {
+      chart: {
+        backgroundColor: '#141414',
+        type: 'networkgraph',
+        style: {
+          margin: 0
+        }
+      },
+      title: {
+        style: {
+          display: 'none'
+        }
+      },
+      plotOptions: {
+        networkgraph: {
+          keys: ['from', 'to'],
+          layoutAlgorithm: {
+            integration: 'verlet',
+            linkLength: 200
+          }
+        }
+      },
+      series: [
+        {
+          color: '#222222',
+          link: {
+            width: 2,
+            color: '#424242',
+          },
+          marker: {
+            radius: 70,
+            fillColor: '#222222',
+            lineWidth: 2,
+            lineColor: '#424242'
+          },
+          dataLabels: {
+            style: {
+              fontFamily: "Seravek",
+              color: "white",
+              width: 55,
+              fontSize: 30,
+            },
+            rotation: 0,
+            useHTML: true,
+            linkTextPath: {
+              enabled: false
+            },
+            linkFormat: '',
+            enabled: true,
+          },
+          data: mindMap,
+          type: "networkgraph"
+        }
+      ],
+      credits: {
+        enabled: false
+      }
+    };
+
+    const initializeMindMap = () => Highcharts.chart('mind-map', options);
+
+    window.addEventListener('load', () => {
+      initializeMindMap();
+    });
+
+  </script>
+{{end}}
+
+{{define "style"}}
+  <style>
+    @keyframes fadeIn {
+      0% {
+        transform: scale(0);
+      }
+      80% {
+        transform: scale(1.02);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    @-webkit-keyframes fadeIn {
+      0% {
+        -webkit-transform: scale(0);
+      }
+      80% {
+        -webkit-transform: scale(1.02);
+      }
+      100% {
+        -webkit-transform: scale(1);
+      }
+    }
+
+    .fade-in {
+      animation-name: fadeIn;
+      -webkit-animation-name: fadeIn;
+
+      animation-duration: 0.7s;
+      -webkit-animation-duration: 0.7s;
+
+      animation-timing-function: cubic-bezier(.37, .74, .32, .94);
+      -webkit-animation-timing-function: cubic-bezier(.37, .74, .32, .94);
+
+      visibility: visible !important;
+    }
+
+    * {
+      margin: 0;
+    }
+
+    #mind-map {
+      width: 70%;
+      height: 100vh;
+      margin: 0 auto;
+    }
+
+    #glossary {
+      display: inline-block;
+      width: 30%;
+      height: 100vh;
+      overflow: auto;
+      margin: 0 auto;
+    }
+
+    .term {
+      background: #222222;
+      padding: 30px;
+      border-radius: 30px;
+      border: 2px solid #424242;
+      color: white;
+      font-family: Seravek;
+      margin-bottom: 15px;
+      margin-left: 15px;
+      margin-right: 8px;
+    }
+
+    .term > .title {
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .term:first-child {
+      margin-top: 8px;
+    }
+
+    body {
+      background: #141414;
+      display: flex;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+{{end}}
